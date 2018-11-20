@@ -1,0 +1,70 @@
+from tkinter import *
+
+root = Tk()
+root.title('Моя прога 1.0.')
+
+# первая метка в строке 0, столбце 0 (0 по умолчанию)
+# парамет sticky  означает выравнивание. W, E,N,S — запад, восток, север, юг
+Label(root,
+      text='Расчет производится по СП 16.13330.2011 Стальные конструкции.\n Проверка сечения от нагрузки. Жесткость сечения. ').grid(
+    row=0, sticky=W)
+
+Label(root, text='Введите максимальный момент (кН*м):').grid(row=1, sticky=W)
+
+# вторая метка в строке 1
+Label(root, text='Введите момент сопротивления сечения (см3)(Тр 219*8мм = 269.89см3):').grid(row=2, sticky=W)
+
+# вторая метка в строке 1
+Label(root, text='Коэффициенты условий работы (0.9):').grid(row=3, sticky=W)
+
+# вторая метка в строке 1
+Label(root, text='Введите площадбь сечения для расчета жоскости 53.03 (см2):').grid(row=4, sticky=W)
+
+# создаем виджеты текстовых полей
+max_movtnt_kN_01 = Entry(root, width=10, font='Arial 16')
+moment_soprotivleniy_secheniya_01 = Entry(root, width=10, font='Arial 16')
+koef_raboty_01 = Entry(root, width=10, font='Arial 16')
+plohad_secenoya_01 = Entry(root, width=10, font='Arial 16')
+EntryC = Entry(root, width=50, font='Arial 16')
+EntryC01 = Entry(root, width=50, font='Arial 16')
+
+# размещаем первые два поля справа от меток, второй столбец (отсчет от нуля)
+max_movtnt_kN_01.grid(row=1, column=1, sticky=E)
+moment_soprotivleniy_secheniya_01.grid(row=2, column=1, sticky=E)
+koef_raboty_01.grid(row=3, column=1, sticky=E)
+plohad_secenoya_01.grid(row=4, column=1, sticky=E)
+
+# третье текстовое поле ввода занимает всю ширину строки 2
+# columnspan — объединение ячеек по столбцам; rowspan — по строкам
+EntryC.grid(row=7, columnspan=2)
+EntryC01.grid(row=8, columnspan=2)
+
+
+def proizv():
+    # берем текст из первого поля
+    racchetnoe_soprotivlenie_stali = 240000000
+    modul_uprugosti = 210000000000
+    max_movtnt_kN = float(max_movtnt_kN_01.get())
+    moment_soprotivleniy_secheniya = float(moment_soprotivleniy_secheniya_01.get())
+    koef_raboty = float(koef_raboty_01.get())
+    plohad_secenoya = float(plohad_secenoya_01.get())
+
+    koeficent = max_movtnt_kN * 1000 / (
+                (moment_soprotivleniy_secheniya / 100 ** 3) * racchetnoe_soprotivlenie_stali * koef_raboty)
+
+    EntryC.delete(0, END)  # очищаем текстовое поле полностью
+
+    if koeficent < 1:
+        EntryC.insert(0, 'Условие выполняется: ' + str(round(koeficent, 2)) + ' < 1 - сечение подобранно верно.')
+    else:
+        print('Условие не выполняется! Сечение не проходит!')
+
+    joskost = (plohad_secenoya * 0.0001 * modul_uprugosti) / 1000
+    EntryC01.insert(0, 'Жесткость сечения : ' + str(round(joskost, 2)) + ' (кН)')
+
+
+# размещаем кнопку в строке 3 во втором столбце
+but = Button(root, text='Произведение', command=proizv)
+but.grid(row=5, columnspan=2)
+
+root.mainloop()
